@@ -1,0 +1,126 @@
+<html>
+	<head>
+		<title>Pousando a Nave</title>
+		<script>
+			var TECLA_ESQ = 37;
+			var TECLA_DIR = 39;
+			var TECLA_ACIMA = 38;
+			var esquerda = false;
+			var direita = false;
+			var acima = false;
+			var combustivel = 100;
+			var canvas;
+			var context;
+			var x = 0;
+			var y = 0;
+			var angulo = 0;
+			var imgBackground = {x:0,y:0};
+			var imgModulo;
+			var altura = 400;
+			
+			var aceleracao = {x:0,y:0};
+			
+			function IniciaCanvas(){
+				canvas = document.getElementById('meuCanvas');
+				context = canvas.getContext('2d');
+				
+				imgBackground = new Image();
+				imgBackground.src = 'backgroundUniverso.png';
+				
+				imgModulo = new Image();
+				imgModulo.src = 'moduloLunar.png';
+
+				
+				setInterval(Loop, 1000/60); //Nome function e Tempo depois da "," 
+			}	
+			
+			function Loop(){
+				if(esquerda)aceleracao.x = aceleracao.x - 1;
+				if(direita)aceleracao.x = aceleracao.x + 1;
+				if(acima)aceleracao.y = aceleracao.y - 1;
+
+				x = x + aceleracao.x;
+				y = y + aceleracao.y;
+				aceleracao.x = aceleracao.x * .100; //Desacelera, simula atrito
+				aceleracao.y = aceleracao.y * .80; //Desacelera, simula atrito
+
+										
+				context.drawImage(imgBackground, 0, 0, 800, 650);
+				context.drawImage(imgModulo, x, y, 150, 150);
+				
+				
+				//angulo = angulo + 0.01;
+				y = y + 1; //Math.cos(angulo);
+				combustivel = combustivel - 0.001;
+				let gasosa = parseFloat(parseFloat(combustivel).toFixed(2));
+
+				altura = 400 - y;
+				let alturaMetros = parseInt(altura);
+				
+				context.font = '20px Arial';
+				context.fillStyle = 'yellow';
+				context.fillText('Altitude: ' + alturaMetros + ' pés', 500, 40);
+				context.fillText('Combustível: '+ gasosa, 500, 60);
+
+				if(combustivel <= 0) alert("Acabou seu Combustível! Fim de Jogo!");
+
+				//verificar se a imagem saiu das dimensões da tela
+				if (x < -130 || x > 780 || y < -130 || y > 630) {
+    				alert("Você se perdeu no espaço !!!");    				
+  				}
+
+  				//verificar posição de vitória
+
+  				if (x < 600 && x > 380 && y > 400 && y < 420) {
+    				alert("Click! Você ganhou !!!");    				
+  				}
+
+  				//verificar posição de derrota
+
+  				if (x > 0 && x < 380 && x > 600 || y > 400) {    			
+				alert("Você pousou no lugar errado, você perdeu !!!");    				
+  				}		
+				
+				  for(i=0; i<800;i++){
+					context.setLineDash = ([5,15]);
+					context.fillStyle = 'black';
+					context.fillText('_', 0+i, 515);
+			}
+
+				
+			}
+			
+			function VerificaTeclaPressionada(e){
+				
+				if(e.keyCode == TECLA_ESQ) //37
+					esquerda = true;
+					
+				if(e.keyCode == TECLA_DIR) //39
+					direita = true;	
+
+				if(e.keyCode == TECLA_ACIMA){ //38
+					acima = true;
+					combustivel = combustivel - 1.5;}			
+			}
+			
+			
+			function VerificaTeclaSolta(e){
+				
+				if(e.keyCode == TECLA_ESQ) //37
+					esquerda = false;
+					
+				if(e.keyCode == TECLA_DIR) //39
+					direita = false;
+
+				if(e.keyCode == TECLA_ACIMA) //38
+					acima = false;			
+			}
+
+		</script>
+	</head>
+	<body onkeydown="VerificaTeclaPressionada(event);" onkeyup="VerificaTeclaSolta(event);" onload='IniciaCanvas();'>
+		<canvas id="meuCanvas" width="800" height="650">
+			Seu browser não suporta canvas!
+		</canvas>
+	</body>
+</html>
